@@ -1,0 +1,51 @@
+# llm_client.py
+
+import uuid
+import httpx
+import truststore
+import ssl
+import openai
+
+from token_jwt import get_token
+
+BASE_URL = "Link"
+USER_ID = "UC1939194"
+MODEL = "GPT-4.1"
+
+ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+
+http_client = httpx.Client(http2=True, verify=ctx)
+
+
+def get_client():
+    return openai.OpenAI(
+        api_key="test",
+        base_url=BASE_URL,
+        http_client=http_client
+    )
+
+
+def build_headers():
+    return {
+        "X-HSBC-E2E-Trust-Token": get_token(),
+        "x-correlation-id": str(uuid.uuid4()),
+        "x-usersession-id": str(uuid.uuid4())
+    }
+
+
+def call_llm(prompt, question):
+
+    client = get_client()
+
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": question}
+        ],
+        user=USER_ID,
+        extra_headers=build_headers(),
+        temperature=0
+    )
+
+    return response.choices[0].message.content.strip()
