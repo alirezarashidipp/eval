@@ -1,0 +1,40 @@
+# main_eval.py
+
+import mlflow
+from mlflow.genai.scorers import Correctness
+
+from dataset import EVAL_DATA
+from prompts import SYSTEM_PROMPTS
+from scorers import output_not_empty
+from llm_client import call_llm
+from config import EXPERIMENT_NAME
+
+
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_experiment(EXPERIMENT_NAME)
+
+
+def predict_fn(question, prompt):
+    return call_llm(prompt, question)
+
+
+for version, prompt in SYSTEM_PROMPTS.items():
+
+    def model_predict(question):
+        return predict_fn(question, prompt)
+
+    with mlflow.start_run(run_name=f"prompt_{version}"):
+
+        mlflow.log_param("prompt_version", version)
+        mlflow.log_param("system_prompt", prompt)
+
+        results = mlflow.genai.evaluate(
+            data=EVAL_DATA,
+            predict_fn=model_predict,
+            scorers=[
+                Correctness(),
+                output_not_empty
+            ]
+        )
+
+        print(results.metrics)
