@@ -1,0 +1,20 @@
+# dataset.py
+
+EVAL_DATA = [
+    {
+        "inputs": {
+            "question": "What is the capital of France?"
+        },
+        "expectations": {
+            "expected_response": "Paris"
+        }
+    },
+    {
+        "inputs": {
+            "question": "Who wrote Hamlet?"
+        },
+        "expectations": {
+            "expected_response": "William Shakespeare"
+        }
+    }
+]
