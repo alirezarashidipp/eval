@@ -1,0 +1,7 @@
+# scorers.py
+
+from mlflow.genai.scorers import scorer
+
+@scorer
+def output_not_empty(outputs):
+    return outputs is not None and len(outputs.strip()) > 0
