@@ -1,0 +1,6 @@
+# prompts.py
+
+SYSTEM_PROMPTS = {
+    "v1": "Answer correctly and briefly.",
+    "v2": "You are a strict factual assistant. Answer with exact facts."
+}
